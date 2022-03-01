@@ -1,6 +1,7 @@
+#pip install requests beautifulsoup4 lxml pyinstaller
+#compiling: pyinstaller --noconsole -i ico.ico --onefile main.py
 import requests
 from bs4 import BeautifulSoup as bs
-import pandas as pd
 import random
 import re
 from urllib.request import urlretrieve
@@ -24,7 +25,7 @@ def wallapers_parser():
     #site_number_pars
     URL_p = f"https://wallpaperscraft.ru/catalog/{category}/page1"
     r_p = requests.get(URL_p)
-    soup_p = bs(r_p.text, "html.parser")
+    soup_p = bs(r_p.text, "lxml")
     vacancies_names_p = soup_p.find('li', class_='pager__item pager__item_last-page').find_all('a', class_='pager__link')
     for name_p in vacancies_names_p:
         p_href_nohttps = name_p.get('href')
@@ -35,7 +36,7 @@ def wallapers_parser():
     #wallaper_pars
     URL_w = f"https://wallpaperscraft.ru/catalog/{category}/page{site_number}"
     r_w = requests.get(URL_w)
-    soup_w = bs(r_w.text, "html.parser")
+    soup_w = bs(r_w.text, "lxml")
     vacancies_names_w = soup_w.find_all('a', class_='wallpapers__link')
     for name_w in vacancies_names_w:
         w_href_nohttps = name_w.get('href')
