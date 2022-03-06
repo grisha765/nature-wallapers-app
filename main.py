@@ -9,9 +9,15 @@ import os
 import subprocess as sp
 import ctypes
 import configparser
+import platform
 w_list = []
-path_w = sp.getoutput("powershell.exe $HOME") + "\Pictures\\"
+if platform.system() == 'Windows':
+    path_w = sp.getoutput("powershell.exe $HOME") + "\Pictures\\"
+if platform.system() == 'Linux':
+    path_w = sp.getoutput("echo ~") + "/.config/nature-wallapers-app/"
 if os.path.exists(f"{path_w}config_wallapers.ini") == False:
+    if platform.system() == 'Linux':
+        os.mkdir(f'{path_w}')
     config_text_size = "#Choose your size:\n#240x320, 240x400, 320x240, 320x480, 360x640\n#480x800, 480x854, 540x960, 720x1280, 800x600\n#800x1280, 960x544, 1024x600, 1080x1920, 2160x3840\n#1366x768, 1440x2560, 800x1200, 800x1420, 938x1668\n#1280x1280, 1350x2400, 2780x2780, 3415x3415, 1024x768\n#1152x864, 1280x960, 1400x1050, 1600x1200, 1280x1024\n#1280x720, 1280x800, 1440x900, 1680x1050, 1920x1200\n#2560x1600, 1600x900, 2560x1440, 1920x1080, 2048x1152\n#2560x1024, 2560x1080"
     config_text_category = "#Choose your category:\n#3d, abstraction, anime, art, vector, cities\n#food, animals, space, love, macro, cars\n#minimalism, motorcycles, music, holidays, nature, miscellaneous\n#words, smilies, sport, textures, dark, technology\n#fantasy, flowers, black"
     config = open(f"{path_w}config_wallapers.ini","w")
@@ -48,8 +54,13 @@ def wallapers_parser():
     urlretrieve(f"{w_list_r}", f"{path_w}wallaper.png")
     #print(w_list_r)
     def set_wallpaper(path):
-        cs = ctypes.c_buffer(path.encode())
-        SPI_SETDESKWALLPAPER = 0x14
-        ctypes.windll.user32.SystemParametersInfoA(20, 0, cs, 3)
+        if platform.system() == 'Windows':
+            cs = ctypes.c_buffer(path.encode())
+            SPI_SETDESKWALLPAPER = 0x14
+            ctypes.windll.user32.SystemParametersInfoA(20, 0, cs, 3)
+        if platform.system() == 'Linux':
+            cs = f"{path}"
+            xfce_w = sp.getoutput('xfconf-query -c xfce4-desktop -l |grep /workspace0/last-image')
+            sp.call(f'xfconf-query -c xfce4-desktop -p {xfce_w} -s {cs}', shell=True)
     set_wallpaper(f"{path_w}wallaper.png")
 wallapers_parser()
